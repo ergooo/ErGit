@@ -1,4 +1,4 @@
-name := "Checkout-kun"
+name := "ErGit"
 
 version := "1.0"
 

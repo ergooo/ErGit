@@ -1,8 +1,8 @@
-package jp.ergo.scala.checkoutkun.ergit
+package jp.ergo.ergit
 
 import java.io.File
 
-import jp.ergo.scala.checkoutkun.ergit.exception.{RemoteRepositoryNotFoundException, NoSuchBranchException, BranchNotFoundException, GitServiceException}
+import jp.ergo.ergit.exception.{BranchNotFoundException, GitServiceException, RemoteRepositoryNotFoundException, NoSuchBranchException}
 
 import scala.sys.process._
 
