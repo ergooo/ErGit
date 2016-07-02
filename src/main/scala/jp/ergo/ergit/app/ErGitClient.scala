@@ -1,12 +1,12 @@
-package jp.ergo.scala.checkoutkun.app
+package jp.ergo.ergit.app
 
 import java.io.File
 
-class CheckoutKun {
+class ErGitClient {
 
 }
 
-object CheckoutKun {
+object ErGitClient {
   def main(args: Array[String]): Unit = {
 
 

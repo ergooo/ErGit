@@ -1,4 +1,4 @@
-package jp.ergo.scala.checkoutkun
+package jp.ergo.ergit
 
 import jp.ergo.scala.checkoutkun.repository.{Branch, Repository}
 

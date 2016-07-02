@@ -1,4 +1,4 @@
-package jp.ergo.scala.checkoutkun.ergit
+package jp.ergo.ergit.ergit
 
 import java.io.File
 
