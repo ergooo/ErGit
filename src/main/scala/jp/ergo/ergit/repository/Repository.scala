@@ -1,9 +1,8 @@
-package jp.ergo.scala.checkoutkun.repository
+package jp.ergo.ergit.repository
 
 import java.io.File
-
-import jp.ergo.scala.checkoutkun.ergit.ErGit
-import jp.ergo.scala.checkoutkun.ergit.exception.NoSuchBranchException
+import jp.ergo.ergit.ErGit
+import jp.ergo.ergit.exception.NoSuchBranchException
 
 
 case class Repository(path: String, name: String, branches: Seq[Branch], remoteBranches: Seq[Branch]) {

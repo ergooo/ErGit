@@ -1,9 +1,8 @@
-package jp.ergo.scala.checkoutkun
+package jp.ergo.ergit
 
 import java.io.File
 
-import jp.ergo.scala.checkoutkun.repository.Repository
-
+import jp.ergo.ergit.repository.Repository
 
 
 object HelloWorld {

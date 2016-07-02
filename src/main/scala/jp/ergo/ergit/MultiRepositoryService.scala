@@ -1,6 +1,7 @@
-package jp.ergo.scala.checkoutkun
+package jp.ergo.ergit
 
-import jp.ergo.scala.checkoutkun.repository.{Branch, Repository}
+import jp.ergo.ergit.repository.{Branch, Repository}
+
 
 class MultiRepositoryService(repositories: Seq[Repository]) {
   def checkout(branch: Branch): Unit = {
