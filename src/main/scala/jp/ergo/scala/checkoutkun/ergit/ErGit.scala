@@ -76,12 +76,7 @@ object ErGit {
   }
 
   def isUnderGit(path: String): Boolean = {
-    try {
-      proc(Seq("git", "status"), path) !! ProcessLogger(_ => {}, _ => {})
-      true
-    } catch {
-      case _: Throwable => false
-    }
+    new File(path, ".git").exists()
   }
 
   private def has(path: String, branch: String): Boolean = {
