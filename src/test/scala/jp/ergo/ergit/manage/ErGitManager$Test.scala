@@ -1,70 +1,71 @@
 package jp.ergo.ergit.manage
 
-import java.io.File
-import java.nio.charset.StandardCharsets
-import jp.ergo.ergit.manage.exception.ErGitManageException
-import org.apache.commons.io.FileUtils
-import org.scalatest._
+import java.io.{File => JFile}
 
-import scala.sys.process.Process
+import better.files._
+import jp.ergo.ergit.manage.exception.ErGitManageException
+import org.scalatest._
 
 
 class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
-  private val path = new File("./src/test/resources")
+  private val root = File("./src/test/resources")
+  private val ergitFile = root / ".ergit"
 
   behavior of "ErGitManager$Test"
+
   before {
-    FileUtils.deleteDirectory(new File(path, ".ergit"))
+    if (ergitFile.exists) ergitFile.delete()
   }
 
   after {
-    FileUtils.deleteDirectory(new File(path, ".ergit"))
+    if (ergitFile.exists) ergitFile.delete()
   }
   "init" should "init" in {
-    ErGitManager.init(path)
-    new File(path, ".ergit").exists() should be(true)
-    new File(path, ".ergit/repos").exists() should be(true)
+    ErGitManager.init(root)
+    root / ".ergit" exists() should be(true)
+    root / ".ergit" / "repos" exists() should be(true)
   }
 
   "init" should "throw ErGitManageException" in {
-    ErGitManager.init(path)
-    a[ErGitManageException] should be thrownBy ErGitManager.init(path)
+    ErGitManager.init(root)
+    a[ErGitManageException] should be thrownBy ErGitManager.init(root)
   }
 
   "addRepository" should "add repository" in {
-    ErGitManager.init(path)
-    ErGitManager.addRepository(path, "repository1")
-    ErGitManager.addRepository(path, "repository2")
+    ErGitManager.init(root)
+    ErGitManager.addRepository(root, "repository1")
+    ErGitManager.addRepository(root, "repository2")
 
-    val lines = FileUtils.readLines(new File(path, ".ergit/repos"), StandardCharsets.UTF_8)
-    lines.get(0) should be("repository1")
-    lines.get(1) should be("repository2")
+    val lines = root / ".ergit" / "repos" lines
+    val array = lines.toArray
+    array(0) should be("repository1")
+    array(1) should be("repository2")
   }
 
   "isUnderErGit" should "return true" in {
-    ErGitManager.init(path)
-    val child = new File(path, "child")
-    child.mkdir()
+    ErGitManager.init(root)
+    val child = root / "child"
+    child.createDirectory()
     ErGitManager.isUnderErGit(child) should be(true)
     child.delete()
   }
 
   "isUnderErGit" should "return false" in {
-    ErGitManager.isUnderErGit(path) should be(false)
+    ErGitManager.isUnderErGit(root) should be(false)
   }
 
   "getErGitRoot" should "return ErGit root directory" in {
-    ErGitManager.init(path)
-    val child = new File(path, "child")
-    child.mkdir()
+    ErGitManager.init(root)
+    val child = root / "child"
+    child.createDirectory()
 
-    ErGitManager.getErGitRoot(child).getName should be(".ergit")
+    ErGitManager.getErGitRoot(child).name should be(".ergit")
     child.delete()
   }
 
 
   "getErGitRoot" should "throw ErGitManageException" in {
-    a[ErGitManageException] should be thrownBy ErGitManager.getErGitRoot(path)
+    a[ErGitManageException] should be thrownBy ErGitManager.getErGitRoot(root)
   }
 
 
