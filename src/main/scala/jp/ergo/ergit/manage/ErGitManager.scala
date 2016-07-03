@@ -76,7 +76,17 @@ object ErGitManager {
     * @param name
     * @throws ErGitNotInitializedException if no .ergit found.
     */
-  def removeRepository(directory: File, name: String) = ???
+  def removeRepository(directory: File, name: String) = {
+    verifyUnderGit(directory)
+    val reposFile = getRepoFile(directory)
+    val temp = reposFile.parent/"repo.tmp"
+    temp.createIfNotExists()
+    reposFile.lines filter(p => p != name) foreach{
+      f => temp.appendLine(f)
+    }
+    reposFile.overwrite(temp.contentAsString)
+    temp.delete()
+  }
 
   /**
     * find repo file recursively.
