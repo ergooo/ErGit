@@ -1,13 +1,10 @@
 package jp.ergo.ergit.manage
 
-import java.io.File
-import java.nio.charset.StandardCharsets
-import java.util
-
-import jp.ergo.ergit.manage.exception.{ErGitRepoFileNotFoundException, ErGitNotInitializedException, ErGitManageException}
-import org.apache.commons.io.FileUtils
+import better.files._
+import jp.ergo.ergit.manage.exception.{ErGitManageException, ErGitNotInitializedException, ErGitRepoFileNotFoundException}
 
 import scala.annotation.tailrec
+
 
 /**
   * manages the config files in .ergit
@@ -27,13 +24,12 @@ object ErGitManager {
     * @throws ErGitManageException if it has already initialized.
     */
   def init(directory: File): Unit = {
-    if (isUnderErGit(directory.getAbsoluteFile)) {
+    if (isUnderErGit(directory)) {
       throw new ErGitManageException("already initialized.")
     }
-    val ergitDirectory = new File(directory, ".ergit")
-    ergitDirectory.mkdir()
-
-    new File(ergitDirectory, "repos").createNewFile()
+    val ergitDirectory = directory / ".ergit"
+    ergitDirectory.createDirectory()
+    ergitDirectory.createChild("repos")
   }
 
   /**
@@ -44,10 +40,10 @@ object ErGitManager {
     */
   @tailrec
   def isUnderErGit(directory: File): Boolean = {
-    directory.listFiles() find (p => p.getName == ".ergit") match {
-      case None => directory.getParentFile match {
-        case null => false
-        case _ => isUnderErGit(directory.getParentFile)
+    directory.children.find(p => p.name == ".ergit") match {
+      case None => directory.parentOption match {
+        case None => false
+        case Some(x) => isUnderErGit(x)
       }
       case _ => true
     }
@@ -64,9 +60,11 @@ object ErGitManager {
   def addRepository(directory: File, name: String) = {
     verifyUnderGit(directory)
     val reposFile = getRepoFile(directory)
-    FileUtils.readLines(reposFile, StandardCharsets.UTF_8).contains(name) match {
-      case true => throw new ErGitManageException("%s already exists.".format(name))
-      case _ => FileUtils.writeStringToFile(reposFile, "%s\n".format(name), StandardCharsets.UTF_8, true)
+    val lines = reposFile.lines
+
+    lines find (p => p == name) match {
+      case None => reposFile.appendLine(name)
+      case _ => throw new ErGitManageException("%s already exists.".format(name))
     }
   }
 
@@ -91,7 +89,7 @@ object ErGitManager {
   def getRepoFile(directory: File): File = {
     verifyUnderGit(directory)
     val ergitRoot = getErGitRoot(directory)
-    ergitRoot.listFiles() find (p => p.getName == "repos") match {
+    ergitRoot.children.find(p => p.name == "repos") match {
       case Some(x) => x
       case _ => throw new ErGitRepoFileNotFoundException("cannot found repos file.")
     }
@@ -106,10 +104,10 @@ object ErGitManager {
     */
   @tailrec
   def getErGitRoot(directory: File): File = {
-    directory.listFiles() find (p => p.getName == ".ergit") match {
-      case None => directory.getParentFile match {
-        case null => throw new ErGitNotInitializedException()
-        case _ => getErGitRoot(directory.getParentFile)
+    directory.children.find(p => p.name == ".ergit") match {
+      case None => directory.parentOption match {
+        case None => throw new ErGitNotInitializedException()
+        case Some(x) => getErGitRoot(x)
       }
       case Some(x) => x
     }
