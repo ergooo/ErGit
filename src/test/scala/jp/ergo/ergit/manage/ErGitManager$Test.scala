@@ -85,7 +85,7 @@ class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
     ErGitManager.addRepository(root, Repository(pathToRepository1))
     ErGitManager.addRepository(root, Repository(pathToRepository2))
 
-    ErGitManager.removeRepository(root, Repository(pathToRepository1))
+    ErGitManager.removeRepository(root, "repository1")
     val repoFile = root / ".ergit" / ErGitManager.repoFileName
     using[Unit, InputStream](repoFile.newInputStream){i =>
       val p = new Properties()
@@ -110,7 +110,7 @@ class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
     }
 
     // the repository3 to remove has not been added. then do nothing.
-    ErGitManager.removeRepository(root, Repository(pathToRepository3))
+    ErGitManager.removeRepository(root, "repository3")
 
     using[Unit, InputStream](repoFile.newInputStream){i =>
       val p = new Properties()
