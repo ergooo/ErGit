@@ -79,6 +79,15 @@ object ErGit {
     new File(path, ".git").exists()
   }
 
+  /**
+    * get the result of "git status".
+    * @param path to the directory to execute git command.
+    * @return the result of "git status"
+    */
+  def getStatus(path: String): String = {
+    Process(Seq("git", "status"), new File(path)) !!
+  }
+
   private def has(path: String, branch: String): Boolean = {
     getLocalBranches(path) ++ getRemoteBranches(path) contains branch
   }
