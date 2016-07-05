@@ -118,10 +118,9 @@ object ErGitManager {
     using[Seq[Repository], InputStream](fileInputStream) { i =>
       p.load(i)
       p.stringPropertyNames().asScala.map { f =>
-        Repository(File(p.getProperty(f)))
+        Repository(f, File(p.getProperty(f)))
       }.toSeq
     }
-
   }
 
 
