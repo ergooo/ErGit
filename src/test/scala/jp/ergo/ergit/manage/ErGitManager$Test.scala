@@ -12,9 +12,9 @@ class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
   private val root = File("./src/test/resources")
   private val ergitFile = root / ".ergit"
 
-  private val repository1: Repository = Repository("./", "repository1", Seq[Branch](), Seq[Branch]())
-  private val repository2: Repository = Repository("./", "repository2", Seq[Branch](), Seq[Branch]())
-  private val repository3: Repository = Repository("./", "repository3", Seq[Branch](), Seq[Branch]())
+  private val repository1: Repository = Repository("path/to/repository1", "repository1", Seq[Branch](), Seq[Branch]())
+  private val repository2: Repository = Repository("path/to/repository2", "repository2", Seq[Branch](), Seq[Branch]())
+  private val repository3: Repository = Repository("path/to/repository3", "repository3", Seq[Branch](), Seq[Branch]())
 
   behavior of "ErGitManager$Test"
 
@@ -44,8 +44,8 @@ class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
 
     val lines = root / ".ergit" / "repos" lines
     val array = lines.toArray
-    array(0) should be("repository1")
-    array(1) should be("repository2")
+    array(0) should be("""repository1="path/to/repository1"""")
+    array(1) should be("""repository2="path/to/repository2"""")
   }
 
 
@@ -64,21 +64,28 @@ class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
     ErGitManager.removeRepository(root, repository1)
     val lines = root / ".ergit" / "repos" lines
     val array = lines.toArray
-    array(0) should be("repository2")
+    array(0) should be("""repository2="path/to/repository2"""")
   }
 
 
-  "removeRepository" should "do nothing" in {
+  "removeRepository" should "do nothing if no repository to remove found" in {
     ErGitManager.init(root)
     ErGitManager.addRepository(root, repository1)
     ErGitManager.addRepository(root, repository2)
+    val linesBefore = root / ".ergit" / "repos" lines
+    val arrayBefore = linesBefore.toArray
+    arrayBefore.length should be(2)
+    arrayBefore(0) should be("""repository1="path/to/repository1"""")
+    arrayBefore(1) should be("""repository2="path/to/repository2"""")
 
+    // the repository3 to remove has not been added. then do nothing.
     ErGitManager.removeRepository(root, repository3)
-    val lines = root / ".ergit" / "repos" lines
-    val array = lines.toArray
-    array.length should be(2)
-    array(0) should be("repository1")
-    array(1) should be("repository2")
+    
+    val linesAfter = root / ".ergit" / "repos" lines
+    val arrayAfter = linesAfter.toArray
+    arrayAfter.length should be(2)
+    arrayAfter(0) should be("""repository1="path/to/repository1"""")
+    arrayAfter(1) should be("""repository2="path/to/repository2"""")
   }
 
   "isUnderErGit" should "return true" in {
