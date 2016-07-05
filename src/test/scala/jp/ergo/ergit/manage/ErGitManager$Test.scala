@@ -4,12 +4,17 @@ import java.io.{File => JFile}
 
 import better.files._
 import jp.ergo.ergit.manage.exception.ErGitManageException
+import jp.ergo.ergit.repository.{Branch, Repository}
 import org.scalatest._
 
 
 class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
   private val root = File("./src/test/resources")
   private val ergitFile = root / ".ergit"
+
+  private val repository1: Repository = Repository("./", "repository1", Seq[Branch](), Seq[Branch]())
+  private val repository2: Repository = Repository("./", "repository2", Seq[Branch](), Seq[Branch]())
+  private val repository3: Repository = Repository("./", "repository3", Seq[Branch](), Seq[Branch]())
 
   behavior of "ErGitManager$Test"
 
@@ -34,8 +39,8 @@ class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
 
   "addRepository" should "add repository" in {
     ErGitManager.init(root)
-    ErGitManager.addRepository(root, "repository1")
-    ErGitManager.addRepository(root, "repository2")
+    ErGitManager.addRepository(root, repository1)
+    ErGitManager.addRepository(root, repository2)
 
     val lines = root / ".ergit" / "repos" lines
     val array = lines.toArray
@@ -46,17 +51,17 @@ class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
 
   "addRepository" should "throws ErGitManageException" in {
     ErGitManager.init(root)
-    ErGitManager.addRepository(root, "repository1")
-    a[ErGitManageException] should be thrownBy ErGitManager.addRepository(root, "repository1")
+    ErGitManager.addRepository(root, repository1)
+    a[ErGitManageException] should be thrownBy ErGitManager.addRepository(root, repository1)
 
   }
 
   "removeRepository" should "remove the repository" in {
     ErGitManager.init(root)
-    ErGitManager.addRepository(root, "repository1")
-    ErGitManager.addRepository(root, "repository2")
+    ErGitManager.addRepository(root, repository1)
+    ErGitManager.addRepository(root, repository2)
 
-    ErGitManager.removeRepository(root, "repository1")
+    ErGitManager.removeRepository(root, repository1)
     val lines = root / ".ergit" / "repos" lines
     val array = lines.toArray
     array(0) should be("repository2")
@@ -65,10 +70,10 @@ class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
 
   "removeRepository" should "do nothing" in {
     ErGitManager.init(root)
-    ErGitManager.addRepository(root, "repository1")
-    ErGitManager.addRepository(root, "repository2")
+    ErGitManager.addRepository(root, repository1)
+    ErGitManager.addRepository(root, repository2)
 
-    ErGitManager.removeRepository(root, "repository3")
+    ErGitManager.removeRepository(root, repository3)
     val lines = root / ".ergit" / "repos" lines
     val array = lines.toArray
     array.length should be(2)
