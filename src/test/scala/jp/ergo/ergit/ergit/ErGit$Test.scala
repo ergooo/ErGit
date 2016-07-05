@@ -2,8 +2,9 @@ package jp.ergo.ergit.ergit
 
 import java.io.File
 
-import jp.ergo.ergit.ErGit
 import jp.ergo.ergit.exception.{NoSuchBranchException, RemoteRepositoryNotFoundException}
+import jp.ergo.ergit.ErGit
+import jp.ergo.ergit.utils.GitHelper
 import org.scalatest._
 
 import scala.sys.process.Process
@@ -16,28 +17,13 @@ class ErGit$Test extends FlatSpec with Matchers with BeforeAndAfter with BeforeA
   // BeforeAndAfterトレイト
   before {
     // git init
-    Process(Seq("git", "init"), path) !!
+    GitHelper.create(path, Seq("hoge", "mage", "piyo"))
 
-    Process(Seq("touch", "Readme.md"), path) !!
-
-    Process(Seq("git", "add", "."), path) !!
-
-    Process(Seq("git", "commit", "-m", "initial commit"), path) !!
-
-
-    // create 3  branches
-    Process(Seq("git", "branch", "hoge"), path) !!
-
-    Process(Seq("git", "branch", "mage"), path) !!
-
-    Process(Seq("git", "branch", "piyo"), path) !!
   }
 
   after {
     // remove .git
-    Process(Seq("rm", "-rf", ".git/"), path) !!
-
-    Process(Seq("rm", "Readme.md"), path) !!
+    GitHelper.destroy(path)
   }
 
   // BeforeAndAfterAllトレイト
@@ -56,7 +42,7 @@ class ErGit$Test extends FlatSpec with Matchers with BeforeAndAfter with BeforeA
   }
 
   "checkout" should "throw BranchNotFoundException if the branch does not exist" in {
-    a [NoSuchBranchException] should be thrownBy ErGit.checkout(path.getAbsolutePath, "huga")
+    a[NoSuchBranchException] should be thrownBy ErGit.checkout(path.getAbsolutePath, "huga")
   }
 
   "checkoutb" should "checkout fuga branch" in {
@@ -80,7 +66,7 @@ class ErGit$Test extends FlatSpec with Matchers with BeforeAndAfter with BeforeA
   }
 
   "fetch" should "throws RemoteRepositoryNotFoundException if there is no remote repositories" in {
-    a [RemoteRepositoryNotFoundException] should be thrownBy ErGit.fetch(path.toString)
+    a[RemoteRepositoryNotFoundException] should be thrownBy ErGit.fetch(path.toString)
   }
 
   "isUnderGit" should "return true if the directory is under git" in {
