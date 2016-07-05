@@ -80,26 +80,25 @@ object ErGitManager {
     }
   }
 
-
   /**
     * remove the repository form the repo file. Do nothing if the repository cannot be found.
     *
     * @param directory  the ergit managed directory.
-    * @param repository the repository to remove.
+    * @param name the repository name to remove.
     * @throws ErGitNotInitializedException if no .ergit found.
     */
-  def removeRepository(directory: File, repository: Repository): Unit = {
+  def removeRepository(directory: File, name: String): Unit = {
     verifyUnderGit(directory)
-    val reposFile = getRepoFile(directory)
-    val temp = reposFile.parent / "repo.tmp"
-    temp.createIfNotExists()
-    reposFile.lines filter (p => p != toStoredString(repository)) foreach {
-      f => temp.appendLine(f)
+    val repoFile = getRepoFile(directory)
+    using[Unit, InputStream](repoFile.newInputStream) { i =>
+      val p = new Properties()
+      p.load(i)
+      p.remove(name)
+      using[Unit, OutputStream](repoFile.newOutputStream) { o =>
+        p.store(o, "")
+      }
     }
-    reposFile.overwrite(temp.contentAsString)
-    temp.delete()
   }
-
 
   /**
     * get the repositories.

@@ -26,8 +26,7 @@ object ErGitClient {
             ),
           cmd("remove").action((_, c) => c.copy(action = Action.Remove)).text("add is an action").
             children(
-              arg[String]("<name>").required().action((x, c) => c.copy(repositoryName = x)),
-              arg[String]("<path>").required().action((x, c) => c.copy(repositoryPath = x))
+              arg[String]("<name>").required().action((x, c) => c.copy(repositoryName = x))
             )
         )
     }
@@ -42,7 +41,7 @@ object ErGitClient {
               case Action.Add =>
                 ErGitManager.addRepository(currentDirectory, Repository(config.repositoryName, File(config.repositoryPath)))
               case Action.Remove =>
-                ErGitManager.removeRepository(currentDirectory, Repository(config.repositoryName, File(config.repositoryPath)))
+                ErGitManager.removeRepository(currentDirectory, config.repositoryName)
               case _ =>
                 if (config.verbose) {
                   val repositories = ErGitManager.getRepositories(currentDirectory)
