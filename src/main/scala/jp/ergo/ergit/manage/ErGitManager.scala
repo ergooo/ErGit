@@ -1,16 +1,16 @@
 package jp.ergo.ergit.manage
 
-import java.io.{OutputStream, FileOutputStream, InputStream}
+import java.io.{InputStream, OutputStream}
 import java.util.Properties
 
 import better.files._
 import jp.ergo.ergit.manage.exception.{ErGitManageException, ErGitNotInitializedException, ErGitRepoFileNotFoundException}
 import jp.ergo.ergit.repository.Repository
+import jp.ergo.ergit.utils.Using.using
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 
-import jp.ergo.ergit.utils.Using.using
 /**
   * manages the config files in .ergit
   */
@@ -73,7 +73,7 @@ object ErGitManager {
         throw new ErGitManageException("%s already exists.".format(repository.name))
       } else {
         p.setProperty(repository.name, repository.path)
-        using[Unit, OutputStream](repoFile.newOutputStream){o =>
+        using[Unit, OutputStream](repoFile.newOutputStream) { o =>
           p.store(o, "")
         }
       }
@@ -88,7 +88,7 @@ object ErGitManager {
     * @param repository the repository to remove.
     * @throws ErGitNotInitializedException if no .ergit found.
     */
-  def removeRepository(directory: File, repository: Repository): File = {
+  def removeRepository(directory: File, repository: Repository): Unit = {
     verifyUnderGit(directory)
     val reposFile = getRepoFile(directory)
     val temp = reposFile.parent / "repo.tmp"
@@ -100,7 +100,17 @@ object ErGitManager {
     temp.delete()
   }
 
+
+  /**
+    * get the repositories.
+    *
+    * @param directory the ergit managed directory.
+    * @return the repositories.
+    * @throws ErGitNotInitializedException if no .ergit found.
+    *
+    */
   def getRepositories(directory: File): Seq[Repository] = {
+    verifyUnderGit(directory)
     val repoFile = getRepoFile(directory)
     val p = new Properties()
     val fileInputStream = repoFile.newInputStream
@@ -113,7 +123,6 @@ object ErGitManager {
     }
 
   }
-
 
 
   /**
