@@ -1,5 +1,8 @@
 package jp.ergo.ergit.manage
 
+import java.io.{OutputStream, FileOutputStream, InputStream}
+import java.util.Properties
+
 import better.files._
 import jp.ergo.ergit.manage.exception.{ErGitManageException, ErGitNotInitializedException, ErGitRepoFileNotFoundException}
 import jp.ergo.ergit.repository.Repository
@@ -7,7 +10,7 @@ import jp.ergo.ergit.repository.Repository
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 
-
+import jp.ergo.ergit.utils.Using.using
 /**
   * manages the config files in .ergit
   */
@@ -17,6 +20,7 @@ class ErGitManager {
 
 object ErGitManager {
 
+  val repoFileName = "repos.properties"
 
   /**
     * initialize ergit project.
@@ -31,7 +35,7 @@ object ErGitManager {
     }
     val ergitDirectory = directory / ".ergit"
     ergitDirectory.createDirectory()
-    ergitDirectory.createChild("repos")
+    ergitDirectory.createChild(repoFileName)
   }
 
   /**
@@ -61,12 +65,18 @@ object ErGitManager {
     */
   def addRepository(directory: File, repository: Repository) = {
     verifyUnderGit(directory)
-    val reposFile = getRepoFile(directory)
-    val lines = reposFile.lines
-
-    lines find (p => p == toStoredString(repository)) match {
-      case None => reposFile.appendLine(toStoredString(repository))
-      case _ => throw new ErGitManageException("%s already exists.".format(repository.name))
+    val repoFile = getRepoFile(directory)
+    using[Unit, InputStream](repoFile.newInputStream) { i =>
+      val p = new Properties()
+      p.load(i)
+      if (p.containsKey(repository.name)) {
+        throw new ErGitManageException("%s already exists.".format(repository.name))
+      } else {
+        p.setProperty(repository.name, repository.path)
+        using[Unit, OutputStream](repoFile.newOutputStream){o =>
+          p.store(o, "")
+        }
+      }
     }
   }
 
@@ -92,13 +102,18 @@ object ErGitManager {
 
   def getRepositories(directory: File): Seq[Repository] = {
     val repoFile = getRepoFile(directory)
+    val p = new Properties()
     val fileInputStream = repoFile.newInputStream
-    val p = new java.util.Properties()
-    p.load(fileInputStream)
-    p.stringPropertyNames().asScala.map { f =>
-      Repository(File(p.getProperty(f)))
-    }.toSeq
+
+    using[Seq[Repository], InputStream](fileInputStream) { i =>
+      p.load(i)
+      p.stringPropertyNames().asScala.map { f =>
+        Repository(File(p.getProperty(f)))
+      }.toSeq
+    }
+
   }
+
 
 
   /**
@@ -112,7 +127,7 @@ object ErGitManager {
   def getRepoFile(directory: File): File = {
     verifyUnderGit(directory)
     val ergitRoot = getErGitRoot(directory)
-    ergitRoot.children.find(p => p.name == "repos") match {
+    ergitRoot.children.find(p => p.name == repoFileName) match {
       case Some(x) => x
       case _ => throw new ErGitRepoFileNotFoundException("cannot found repos file.")
     }
