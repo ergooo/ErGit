@@ -5,6 +5,7 @@ import jp.ergo.ergit.manage.exception.{ErGitManageException, ErGitNotInitialized
 import jp.ergo.ergit.repository.Repository
 
 import scala.annotation.tailrec
+import scala.collection.JavaConverters._
 
 
 /**
@@ -89,6 +90,17 @@ object ErGitManager {
     temp.delete()
   }
 
+  def getRepositories(directory: File): Seq[Repository] = {
+    val repoFile = getRepoFile(directory)
+    val fileInputStream = repoFile.newInputStream
+    val p = new java.util.Properties()
+    p.load(fileInputStream)
+    p.stringPropertyNames().asScala.map { f =>
+      Repository(File(p.getProperty(f)))
+    }.toSeq
+  }
+
+
   /**
     * find repo file recursively.
     *
@@ -125,7 +137,7 @@ object ErGitManager {
   }
 
   private def toStoredString(repository: Repository): String = {
-    """%s="%s"""".format(repository.name,repository.path)
+    "%s=%s".format(repository.name, repository.path)
   }
 
   /**
