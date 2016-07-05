@@ -2,39 +2,25 @@ package jp.ergo.ergit.repository
 
 
 import better.files.File
+import jp.ergo.ergit.utils.GitHelper
 import org.scalatest._
 
 import scala.sys.process.Process
 
 class RepositoryTest extends FlatSpec with Matchers with BeforeAndAfter with BeforeAndAfterAll {
 
-  private val path = new File("./src/test/resources")
+  private val path = File("./src/test/resources")
 
   // BeforeAndAfterトレイト
   before {
     // git init
-    Process(Seq("git", "init"), path.toJava) !!
+    GitHelper.create(path.toJava, Seq("hoge", "mage", "piyo"))
 
-    Process(Seq("touch", "Readme.md"), path.toJava) !!
-
-    Process(Seq("git", "add", "."), path.toJava) !!
-
-    Process(Seq("git", "commit", "-m", "initial commit"), path.toJava) !!
-
-
-    // create 3  branches
-    Process(Seq("git", "branch", "hoge"), path.toJava) !!
-
-    Process(Seq("git", "branch", "mage"), path.toJava) !!
-
-    Process(Seq("git", "branch", "piyo"), path.toJava) !!
   }
 
   after {
     // remove .git
-    Process(Seq("rm", "-rf", ".git/"), path.toJava) !!
-
-    Process(Seq("rm", "Readme.md"), path.toJava) !!
+    GitHelper.destroy(path.toJava)
   }
 
 
