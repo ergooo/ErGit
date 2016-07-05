@@ -39,23 +39,6 @@ object ErGitManager {
   }
 
   /**
-    * check recursively
-    *
-    * @param directory the directory to check.
-    * @return true if the directory is under ErGit
-    */
-  @tailrec
-  def isUnderErGit(directory: File): Boolean = {
-    directory.children.find(p => p.name == ".ergit") match {
-      case None => directory.parentOption match {
-        case None => false
-        case Some(x) => isUnderErGit(x)
-      }
-      case _ => true
-    }
-  }
-
-  /**
     * find repo file recursively and add the repository to the repo file.
     *
     * @param directory  the ergit managed directory.
@@ -122,6 +105,40 @@ object ErGitManager {
     }
   }
 
+  /**
+    * find the ergit root directory recursively. the returned file's path includes .ergit directory.
+    *
+    * @param directory the ergit managed directory.
+    * @throws ErGitNotInitializedException if no .ergit found.
+    * @return the ergit root directory. throws ErGitNotInitializedException otherwise.
+    */
+  @tailrec
+  private[manage] def getErGitRoot(directory: File): File = {
+    directory.children.find(p => p.name == ".ergit") match {
+      case None => directory.parentOption match {
+        case None => throw new ErGitNotInitializedException()
+        case Some(x) => getErGitRoot(x)
+      }
+      case Some(x) => x
+    }
+  }
+
+  /**
+    * check recursively
+    *
+    * @param directory the directory to check.
+    * @return true if the directory is under ErGit
+    */
+  @tailrec
+  private[manage] def isUnderErGit(directory: File): Boolean = {
+    directory.children.find(p => p.name == ".ergit") match {
+      case None => directory.parentOption match {
+        case None => false
+        case Some(x) => isUnderErGit(x)
+      }
+      case _ => true
+    }
+  }
 
   /**
     * find repo file recursively.
@@ -131,30 +148,12 @@ object ErGitManager {
     * @throws ErGitNotInitializedException   if no .ergit found.
     * @return the repo file if it found. Throws ErGitManageException otherwise.
     */
-  def getRepoFile(directory: File): File = {
+  private def getRepoFile(directory: File): File = {
     verifyUnderGit(directory)
     val ergitRoot = getErGitRoot(directory)
     ergitRoot.children.find(p => p.name == repoFileName) match {
       case Some(x) => x
       case _ => throw new ErGitRepoFileNotFoundException("cannot found repos file.")
-    }
-  }
-
-  /**
-    * find the ergit root directory recursively. the returned file's path includes .ergit directory.
-    *
-    * @param directory the ergit managed directory.
-    * @throws ErGitNotInitializedException if no .ergit found.
-    * @return the ergit root directory. throws ErGitNotInitializedException otherwise.
-    */
-  @tailrec
-  def getErGitRoot(directory: File): File = {
-    directory.children.find(p => p.name == ".ergit") match {
-      case None => directory.parentOption match {
-        case None => throw new ErGitNotInitializedException()
-        case Some(x) => getErGitRoot(x)
-      }
-      case Some(x) => x
     }
   }
 
