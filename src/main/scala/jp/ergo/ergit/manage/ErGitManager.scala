@@ -63,9 +63,9 @@ object ErGitManager {
     val reposFile = getRepoFile(directory)
     val lines = reposFile.lines
 
-    lines find (p => p == repository.name) match {
-      case None => reposFile.appendLine(repository.name)
-      case _ => throw new ErGitManageException("%s already exists.".format(repository))
+    lines find (p => p == toStoredString(repository)) match {
+      case None => reposFile.appendLine(toStoredString(repository))
+      case _ => throw new ErGitManageException("%s already exists.".format(repository.name))
     }
   }
 
@@ -82,7 +82,7 @@ object ErGitManager {
     val reposFile = getRepoFile(directory)
     val temp = reposFile.parent / "repo.tmp"
     temp.createIfNotExists()
-    reposFile.lines filter (p => p != repository.name) foreach {
+    reposFile.lines filter (p => p != toStoredString(repository)) foreach {
       f => temp.appendLine(f)
     }
     reposFile.overwrite(temp.contentAsString)
@@ -122,6 +122,10 @@ object ErGitManager {
       }
       case Some(x) => x
     }
+  }
+
+  private def toStoredString(repository: Repository): String = {
+    """%s="%s"""".format(repository.name,repository.path)
   }
 
   /**
