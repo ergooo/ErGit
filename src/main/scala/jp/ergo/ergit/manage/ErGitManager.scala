@@ -2,6 +2,7 @@ package jp.ergo.ergit.manage
 
 import better.files._
 import jp.ergo.ergit.manage.exception.{ErGitManageException, ErGitNotInitializedException, ErGitRepoFileNotFoundException}
+import jp.ergo.ergit.repository.Repository
 
 import scala.annotation.tailrec
 
@@ -20,7 +21,7 @@ object ErGitManager {
     * initialize ergit project.
     * this method attempts to create .ergit directory
     *
-    * @param directory
+    * @param directory the directory to init.
     * @throws ErGitManageException if it has already initialized.
     */
   def init(directory: File): Unit = {
@@ -35,7 +36,7 @@ object ErGitManager {
   /**
     * check recursively
     *
-    * @param directory
+    * @param directory the directory to check.
     * @return true if the directory is under ErGit
     */
   @tailrec
@@ -52,19 +53,19 @@ object ErGitManager {
   /**
     * find repo file recursively and add the repository to the repo file.
     *
-    * @param directory
-    * @param name
+    * @param directory the ergit managed directory.
+    * @param repository
     * @throws ErGitManageException         if the repository already exists
     * @throws ErGitNotInitializedException if no .ergit found.
     */
-  def addRepository(directory: File, name: String) = {
+  def addRepository(directory: File, repository: Repository) = {
     verifyUnderGit(directory)
     val reposFile = getRepoFile(directory)
     val lines = reposFile.lines
 
-    lines find (p => p == name) match {
-      case None => reposFile.appendLine(name)
-      case _ => throw new ErGitManageException("%s already exists.".format(name))
+    lines find (p => p == repository.name) match {
+      case None => reposFile.appendLine(repository.name)
+      case _ => throw new ErGitManageException("%s already exists.".format(repository))
     }
   }
 
@@ -73,15 +74,15 @@ object ErGitManager {
     * remove the repository form the repo file. Do nothing if the repository cannot be found.
     *
     * @param directory
-    * @param name
+    * @param repository
     * @throws ErGitNotInitializedException if no .ergit found.
     */
-  def removeRepository(directory: File, name: String) = {
+  def removeRepository(directory: File, repository: Repository) = {
     verifyUnderGit(directory)
     val reposFile = getRepoFile(directory)
     val temp = reposFile.parent/"repo.tmp"
     temp.createIfNotExists()
-    reposFile.lines filter(p => p != name) foreach{
+    reposFile.lines filter(p => p != repository.name) foreach{
       f => temp.appendLine(f)
     }
     reposFile.overwrite(temp.contentAsString)
