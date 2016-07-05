@@ -36,6 +36,10 @@ case class Repository(path: String, name: String, branches: Seq[Branch], remoteB
     } head
   }
 
+  def getStatus: String = {
+    ErGit.getStatus(path)
+  }
+
 }
 
 object Repository {

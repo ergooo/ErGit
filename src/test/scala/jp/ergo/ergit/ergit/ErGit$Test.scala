@@ -78,4 +78,9 @@ class ErGit$Test extends FlatSpec with Matchers with BeforeAndAfter with BeforeA
 
     ErGit.isUnderGit(path.getAbsolutePath) should be(false)
   }
+
+  "getStatus" should "return the status as String" in {
+    val status = ErGit.getStatus(path.getAbsolutePath)
+    status should be("On branch master\nnothing to commit, working directory clean\n")
+  }
 }
