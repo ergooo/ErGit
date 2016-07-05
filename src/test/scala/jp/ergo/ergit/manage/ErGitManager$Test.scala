@@ -102,7 +102,6 @@ class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
     child.delete()
   }
 
-
   "getErGitRoot" should "throw ErGitManageException" in {
     a[ErGitManageException] should be thrownBy ErGitManager.getErGitRoot(root)
   }

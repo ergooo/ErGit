@@ -53,8 +53,8 @@ object ErGitManager {
   /**
     * find repo file recursively and add the repository to the repo file.
     *
-    * @param directory the ergit managed directory.
-    * @param repository
+    * @param directory  the ergit managed directory.
+    * @param repository the repository to add.
     * @throws ErGitManageException         if the repository already exists
     * @throws ErGitNotInitializedException if no .ergit found.
     */
@@ -73,16 +73,16 @@ object ErGitManager {
   /**
     * remove the repository form the repo file. Do nothing if the repository cannot be found.
     *
-    * @param directory
-    * @param repository
+    * @param directory  the ergit managed directory.
+    * @param repository the repository to remove.
     * @throws ErGitNotInitializedException if no .ergit found.
     */
-  def removeRepository(directory: File, repository: Repository) = {
+  def removeRepository(directory: File, repository: Repository): File = {
     verifyUnderGit(directory)
     val reposFile = getRepoFile(directory)
-    val temp = reposFile.parent/"repo.tmp"
+    val temp = reposFile.parent / "repo.tmp"
     temp.createIfNotExists()
-    reposFile.lines filter(p => p != repository.name) foreach{
+    reposFile.lines filter (p => p != repository.name) foreach {
       f => temp.appendLine(f)
     }
     reposFile.overwrite(temp.contentAsString)
@@ -92,7 +92,7 @@ object ErGitManager {
   /**
     * find repo file recursively.
     *
-    * @param directory
+    * @param directory the ergit managed directory.
     * @throws ErGitRepoFileNotFoundException if no repos file found.
     * @throws ErGitNotInitializedException   if no .ergit found.
     * @return the repo file if it found. Throws ErGitManageException otherwise.
@@ -109,7 +109,7 @@ object ErGitManager {
   /**
     * find the ergit root directory recursively. the returned file's path includes .ergit directory.
     *
-    * @param directory
+    * @param directory the ergit managed directory.
     * @throws ErGitNotInitializedException if no .ergit found.
     * @return the ergit root directory. throws ErGitNotInitializedException otherwise.
     */
@@ -126,7 +126,7 @@ object ErGitManager {
 
   /**
     *
-    * @param directory
+    * @param directory the ergit managed directory.
     * @throws ErGitNotInitializedException if no .ergit found.
     */
   private def verifyUnderGit(directory: File): Unit = {
