@@ -1,7 +1,7 @@
 package jp.ergo.ergit.repository
 
-import java.io.File
 
+import better.files.File
 import org.scalatest._
 
 import scala.sys.process.Process
@@ -13,28 +13,28 @@ class RepositoryTest extends FlatSpec with Matchers with BeforeAndAfter with Bef
   // BeforeAndAfterトレイト
   before {
     // git init
-    Process(Seq("git", "init"), path) !!
+    Process(Seq("git", "init"), path.toJava) !!
 
-    Process(Seq("touch", "Readme.md"), path) !!
+    Process(Seq("touch", "Readme.md"), path.toJava) !!
 
-    Process(Seq("git", "add", "."), path) !!
+    Process(Seq("git", "add", "."), path.toJava) !!
 
-    Process(Seq("git", "commit", "-m", "initial commit"), path) !!
+    Process(Seq("git", "commit", "-m", "initial commit"), path.toJava) !!
 
 
     // create 3  branches
-    Process(Seq("git", "branch", "hoge"), path) !!
+    Process(Seq("git", "branch", "hoge"), path.toJava) !!
 
-    Process(Seq("git", "branch", "mage"), path) !!
+    Process(Seq("git", "branch", "mage"), path.toJava) !!
 
-    Process(Seq("git", "branch", "piyo"), path) !!
+    Process(Seq("git", "branch", "piyo"), path.toJava) !!
   }
 
   after {
     // remove .git
-    Process(Seq("rm", "-rf", ".git/"), path) !!
+    Process(Seq("rm", "-rf", ".git/"), path.toJava) !!
 
-    Process(Seq("rm", "Readme.md"), path) !!
+    Process(Seq("rm", "Readme.md"), path.toJava) !!
   }
 
 
@@ -48,11 +48,11 @@ class RepositoryTest extends FlatSpec with Matchers with BeforeAndAfter with Bef
   "Repository" should "create the instance from a File" in {
     val sut = Repository(path)
     sut should not be null
-    sut.path should be(path.getAbsolutePath)
+    sut.path should be(path.pathAsString)
   }
 
   "Repository" should "throw an RepositoryNotFoundException if the directory is not under git " in {
-    Process(Seq("rm", "-rf", ".git/"), path) !!
+    Process(Seq("rm", "-rf", ".git/"), path.toJava) !!
 
     an[RepositoryNotFoundException] should be thrownBy Repository(path)
   }

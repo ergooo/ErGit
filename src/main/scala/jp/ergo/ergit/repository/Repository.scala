@@ -1,6 +1,6 @@
 package jp.ergo.ergit.repository
 
-import java.io.File
+import better.files.File
 import jp.ergo.ergit.ErGit
 import jp.ergo.ergit.exception.NoSuchBranchException
 
@@ -20,7 +20,7 @@ case class Repository(path: String, name: String, branches: Seq[Branch], remoteB
     }
   }
 
-  @throws [NoSuchBranchException]
+  @throws[NoSuchBranchException]
   def checkout(branch: Branch): Unit = {
     ErGit.checkout(path, branch.name)
   }
@@ -40,11 +40,11 @@ case class Repository(path: String, name: String, branches: Seq[Branch], remoteB
 
 object Repository {
   def apply(rootDirectory: File): Repository = {
-    if (!ErGit.isUnderGit(rootDirectory.getAbsolutePath)) {
-      throw new RepositoryNotFoundException("No git repository specified in" + rootDirectory.getAbsolutePath)
+    if (!ErGit.isUnderGit(rootDirectory.pathAsString)) {
+      throw new RepositoryNotFoundException("No git repository specified in" + rootDirectory.pathAsString)
     }
-    val path = rootDirectory.getAbsolutePath
-    val name = rootDirectory.getName
+    val path = rootDirectory.pathAsString
+    val name = rootDirectory.name
     val branches = ErGit.getLocalBranches(path) map { b =>
       Branch(b)
     }
