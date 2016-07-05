@@ -1,12 +1,14 @@
 package jp.ergo.ergit.manage
 
-import java.io.{File => JFile}
+import java.io.{File => JFile, InputStream}
+import java.util.Properties
 
 import better.files._
 import jp.ergo.ergit.manage.exception.ErGitManageException
-import jp.ergo.ergit.repository.{Branch, Repository}
+import jp.ergo.ergit.repository.Repository
 import jp.ergo.ergit.utils.GitHelper
 import org.scalatest._
+import jp.ergo.ergit.utils.Using.using
 
 
 class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
@@ -48,7 +50,7 @@ class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
   "init" should "create .egit directory and repos file" in {
     ErGitManager.init(root)
     root / ".ergit" exists() should be(true)
-    root / ".ergit" / "repos" exists() should be(true)
+    root / ".ergit" / ErGitManager.repoFileName exists() should be(true)
   }
 
   "init" should "throw ErGitManageException" in {
@@ -61,10 +63,13 @@ class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
     ErGitManager.addRepository(root, Repository(pathToRepository1))
     ErGitManager.addRepository(root, Repository(pathToRepository2))
 
-    val lines = root / ".ergit" / "repos" lines
-    val array = lines.toSeq
-    array(0) should be("""repository1="path/to/repository1"""")
-    array(1) should be("""repository2="path/to/repository2"""")
+    val repoFile = root / ".ergit" / ErGitManager.repoFileName
+    using[Unit, InputStream](repoFile.newInputStream){i =>
+      val p = new Properties()
+      p.load(i)
+      p.getProperty("repository1") should be(pathToRepository1.pathAsString)
+      p.getProperty("repository2") should be(pathToRepository2.pathAsString)
+    }
   }
 
 
@@ -81,9 +86,13 @@ class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
     ErGitManager.addRepository(root, Repository(pathToRepository2))
 
     ErGitManager.removeRepository(root, Repository(pathToRepository1))
-    val lines = root / ".ergit" / "repos" lines
-    val array = lines.toSeq
-    array(0) should be("""repository2="path/to/repository2"""")
+    val repoFile = root / ".ergit" / ErGitManager.repoFileName
+    using[Unit, InputStream](repoFile.newInputStream){i =>
+      val p = new Properties()
+      p.load(i)
+      p.getProperty("repository1") should be(null)
+      p.getProperty("repository2") should be(pathToRepository2.pathAsString)
+    }
   }
 
 
@@ -91,20 +100,24 @@ class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
     ErGitManager.init(root)
     ErGitManager.addRepository(root, Repository(pathToRepository1))
     ErGitManager.addRepository(root, Repository(pathToRepository2))
-    val linesBefore = root / ".ergit" / "repos" lines
-    val arrayBefore = linesBefore.toSeq
-    arrayBefore.length should be(2)
-    arrayBefore(0) should be("""repository1="path/to/repository1"""")
-    arrayBefore(1) should be("""repository2="path/to/repository2"""")
+
+    val repoFile = root / ".ergit" / ErGitManager.repoFileName
+    using[Unit, InputStream](repoFile.newInputStream){i =>
+      val p = new Properties()
+      p.load(i)
+      p.getProperty("repository1") should be(pathToRepository1.pathAsString)
+      p.getProperty("repository2") should be(pathToRepository2.pathAsString)
+    }
 
     // the repository3 to remove has not been added. then do nothing.
     ErGitManager.removeRepository(root, Repository(pathToRepository3))
 
-    val linesAfter = root / ".ergit" / "repos" lines
-    val arrayAfter = linesAfter.toSeq
-    arrayAfter.length should be(2)
-    arrayAfter(0) should be("""repository1="path/to/repository1"""")
-    arrayAfter(1) should be("""repository2="path/to/repository2"""")
+    using[Unit, InputStream](repoFile.newInputStream){i =>
+      val p = new Properties()
+      p.load(i)
+      p.getProperty("repository1") should be(pathToRepository1.pathAsString)
+      p.getProperty("repository2") should be(pathToRepository2.pathAsString)
+    }
   }
 
   "isUnderErGit" should "return true" in {
