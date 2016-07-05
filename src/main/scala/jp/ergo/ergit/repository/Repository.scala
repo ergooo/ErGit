@@ -39,12 +39,11 @@ case class Repository(path: String, name: String, branches: Seq[Branch], remoteB
 }
 
 object Repository {
-  def apply(rootDirectory: File): Repository = {
+  def apply(name: String, rootDirectory: File): Repository = {
     if (!ErGit.isUnderGit(rootDirectory.pathAsString)) {
       throw new RepositoryNotFoundException("No git repository specified in" + rootDirectory.pathAsString)
     }
     val path = rootDirectory.pathAsString
-    val name = rootDirectory.name
     val branches = ErGit.getLocalBranches(path) map { b =>
       Branch(b)
     }
@@ -56,6 +55,9 @@ object Repository {
       Seq()
     }
     Repository(path, name, branches, remoteBranches)
+  }
 
+  def apply(rootDirectory: File): Repository = {
+    Repository(rootDirectory.name, rootDirectory)
   }
 }

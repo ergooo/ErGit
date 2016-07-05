@@ -8,5 +8,6 @@ libraryDependencies ++= Seq(
   // ScalaTest
   "org.scalactic" %% "scalactic" % "2.2.6",
   "org.scalatest" %% "scalatest" % "2.2.6" % "test",
-  "com.github.pathikrit" %% "better-files" % "2.16.0"
+  "com.github.pathikrit" %% "better-files" % "2.16.0",
+  "com.github.scopt" %% "scopt" % "3.5.0"
 )
