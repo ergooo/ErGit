@@ -1,6 +1,7 @@
 package jp.ergo.ergit.app
 
 import better.files.File
+import jp.ergo.ergit.MultiRepositoryService
 import jp.ergo.ergit.manage.ErGitManager
 import jp.ergo.ergit.repository.Repository
 
@@ -29,6 +30,9 @@ object ErGitClient {
               arg[String]("<name>").required().action((x, c) => c.copy(repositoryName = x))
             )
         )
+
+      // TODO: get repository name.
+      cmd("status").action((_, c) => c.copy(command = Command.Status)).text("status is a command.")
     }
 
     // parser.parse returns Option[C]
@@ -47,6 +51,14 @@ object ErGitClient {
                   val repositories = ErGitManager.getRepositories(currentDirectory)
                   repositories.foreach(r => println("%s %s".format(r.name, r.path)))
                 }
+            }
+          case Command.Status =>
+            val repositories = ErGitManager.getRepositories(currentDirectory)
+            val status = MultiRepositoryService.getStatus(repositories)
+            status foreach {
+              case (x, y) =>
+                println("%s\n%s\n".format(x, y))
+              case _ =>
             }
           case _ =>
         }

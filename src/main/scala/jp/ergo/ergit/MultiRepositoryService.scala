@@ -20,5 +20,9 @@ class MultiRepositoryService(repositories: Seq[Repository]) {
 }
 
 object MultiRepositoryService {
-
+  def getStatus(repositories: Seq[Repository]): Seq[(String, String)] = {
+    repositories map { r =>
+      (r.name, r.getStatus)
+    }
+  }
 }
