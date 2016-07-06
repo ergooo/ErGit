@@ -10,4 +10,6 @@ object Command {
 
   case object Repository extends Command
 
+  case object Status extends Command
+
 }
