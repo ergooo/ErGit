@@ -54,11 +54,9 @@ object ErGitClient {
             }
           case Command.Status =>
             val repositories = ErGitManager.getRepositories(currentDirectory)
-            val status = MultiRepositoryService.getStatus(repositories)
-            status foreach {
-              case (x, y) =>
-                println("%s\n%s\n".format(x, y))
-              case _ =>
+            val status = MultiRepositoryService.getStatuses(repositories)
+            status foreach { x =>
+              println(x.toString())
             }
           case _ =>
         }
@@ -66,6 +64,5 @@ object ErGitClient {
       case None =>
       // arguments are bad, error message will have been displayed
     }
-
   }
 }
