@@ -1,6 +1,6 @@
 package jp.ergo.ergit
 
-import jp.ergo.ergit.repository.{Branch, Repository}
+import jp.ergo.ergit.repository.{ErGitStatus, Branch, Repository}
 
 
 class MultiRepositoryService(repositories: Seq[Repository]) {
@@ -20,9 +20,9 @@ class MultiRepositoryService(repositories: Seq[Repository]) {
 }
 
 object MultiRepositoryService {
-  def getStatus(repositories: Seq[Repository]): Seq[(String, String)] = {
+  def getStatuses(repositories: Seq[Repository]): Seq[ErGitStatus] = {
     repositories map { r =>
-      (r.name, r.getStatus)
+      ErGitStatus(r.name, r.getStatus)
     }
   }
 }
