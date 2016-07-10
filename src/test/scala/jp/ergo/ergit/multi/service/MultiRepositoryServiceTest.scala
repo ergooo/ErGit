@@ -1,8 +1,9 @@
-package jp.ergo.ergit
+package jp.ergo.ergit.multi.service
 
 import better.files.File
 import jp.ergo.ergit.manage.ErGitManager
-import jp.ergo.ergit.repository.{ErGitStatus, Repository}
+import jp.ergo.ergit.multi.exception.BranchNotExistException
+import jp.ergo.ergit.repository.{Branch, ErGitStatus, Repository}
 import jp.ergo.ergit.utils.GitHelper
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
 
@@ -53,5 +54,45 @@ class MultiRepositoryServiceTest extends FlatSpec with Matchers with BeforeAndAf
       case ErGitStatus("repository3", ｓ) => ｓ should be("On branch master\nnothing to commit, working directory clean\n")
       case _ => fail()
     }
+  }
+
+  "checkout" should "checkout the branch" in {
+    ErGitManager.init(root)
+    ErGitManager.addRepository(root, Repository(pathToRepository1))
+    ErGitManager.addRepository(root, Repository(pathToRepository2))
+    ErGitManager.addRepository(root, Repository(pathToRepository3))
+    val repositories = ErGitManager.getRepositories(root)
+    repositories.foreach(p =>
+      p.getCurrentBranch.name should be("master")
+    )
+
+    MultiRepositoryService.checkout(repositories, Branch("branch1"))
+    repositories.foreach(p =>
+      p.getCurrentBranch.name should be("branch1")
+    )
+  }
+
+
+  "checkout" should "throw BranchNotExistException" in {
+    val pathToRepository4 = root / "repository4"
+    if (pathToRepository4.exists) pathToRepository4.delete()
+    pathToRepository4.createIfNotExists(asDirectory = true)
+    // repository4 does not have the "branch1".
+    GitHelper.create(pathToRepository4.toJava, Seq())
+
+    ErGitManager.init(root)
+    ErGitManager.addRepository(root, Repository(pathToRepository1))
+    ErGitManager.addRepository(root, Repository(pathToRepository2))
+    ErGitManager.addRepository(root, Repository(pathToRepository3))
+    ErGitManager.addRepository(root, Repository(pathToRepository4))
+    val repositories = ErGitManager.getRepositories(root)
+    repositories.foreach(p =>
+      p.getCurrentBranch.name should be("master")
+    )
+
+    a[BranchNotExistException] should be thrownBy MultiRepositoryService.checkout(repositories, Branch("branch1"))
+
+    if (pathToRepository4.exists) pathToRepository4.delete()
+
   }
 }

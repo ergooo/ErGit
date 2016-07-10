@@ -24,6 +24,6 @@ object GitHelper {
     // remove .git
     Process(Seq("rm", "-rf", ".git/"), path) !!
 
-    Process(Seq("rm", "Readme.md"), path) !!
+    Process(Seq("rm", "-f", "Readme.md"), path) !!
   }
 }
