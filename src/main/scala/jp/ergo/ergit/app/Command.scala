@@ -12,4 +12,6 @@ object Command {
 
   case object Status extends Command
 
+  case object Checkout extends Command
+
 }

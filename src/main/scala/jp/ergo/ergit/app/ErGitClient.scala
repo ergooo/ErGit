@@ -1,9 +1,10 @@
 package jp.ergo.ergit.app
 
 import better.files.File
-import jp.ergo.ergit.MultiRepositoryService
 import jp.ergo.ergit.manage.ErGitManager
-import jp.ergo.ergit.repository.Repository
+import jp.ergo.ergit.multi.exception.BranchNotExistException
+import jp.ergo.ergit.multi.service.MultiRepositoryService
+import jp.ergo.ergit.repository.{Branch, Repository}
 
 object ErGitClient {
 
@@ -33,6 +34,11 @@ object ErGitClient {
 
       // TODO: get repository name.
       cmd("status").action((_, c) => c.copy(command = Command.Status)).text("status is a command.")
+
+      cmd("checkout").action((_, c) => c.copy(command = Command.Checkout)).text("checkout is a command.").
+        children(
+          arg[String]("<branch>").required().action((x, c) => c.copy(branchName = x))
+        )
     }
 
     // parser.parse returns Option[C]
@@ -58,6 +64,17 @@ object ErGitClient {
             status foreach { x =>
               println(x.toString())
             }
+
+          case Command.Checkout =>
+            val repositories = ErGitManager.getRepositories(currentDirectory)
+            try {
+              MultiRepositoryService.checkout(repositories, Branch(config.branchName))
+            } catch {
+              case e: BranchNotExistException =>
+                val message = "the following repositories doesn't have the specified branch: %s\n%s".format(config.branchName, e.repositories.map(f => f.name).mkString("\n"))
+                println(message)
+            }
+
           case _ =>
         }
 
