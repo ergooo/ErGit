@@ -11,3 +11,5 @@ libraryDependencies ++= Seq(
   "com.github.pathikrit" %% "better-files" % "2.16.0",
   "com.github.scopt" %% "scopt" % "3.5.0"
 )
+
+parallelExecution in Test := false
