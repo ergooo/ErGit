@@ -87,12 +87,23 @@ object ErGit {
 
   /**
     * get the result of "git status".
- *
+    *
     * @param path to the directory to execute git command.
     * @return the result of "git status"
     */
   def getStatus(path: String): String = {
     Process(Seq("git", "status"), new File(path)) !!
+  }
+
+
+  def hasDifferenceBetweenIndexAndWorkingTree(path: String): Boolean = {
+    (Process(Seq("git", "diff"), new File(path)) !!) != ""
+
+  }
+
+  def hasDifferenceBetweenIndexAndHead(path: String): Boolean = {
+    (Process(Seq("git", "diff", "--cached"), new File(path)) !!) != ""
+
   }
 
   private def has(path: String, branch: String): Boolean = {
