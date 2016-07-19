@@ -1,8 +1,7 @@
-package jp.ergo.ergit.client.ergit
+package jp.ergo.ergit.core.infrastructure
 
 import java.io.File
 
-import jp.ergo.ergit.domain.ErGit
 import jp.ergo.ergit.domain.exception.{NoSuchBranchException, RemoteRepositoryNotFoundException}
 import jp.ergo.ergit.infrastructure.utils.GitHelper
 import org.scalatest._

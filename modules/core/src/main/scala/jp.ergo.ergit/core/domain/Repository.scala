@@ -1,7 +1,7 @@
-package jp.ergo.ergit.client.domain
+package jp.ergo.ergit.core.domain
 
 import better.files.File
-import jp.ergo.ergit.core.ErGit
+import jp.ergo.ergit.core.infrastructure.ErGit
 import jp.ergo.ergit.domain.exception.NoSuchBranchException
 
 
@@ -44,9 +44,7 @@ case class Repository(path: String, name: String, branches: Seq[Branch], remoteB
 
 object Repository {
   def apply(name: String, rootDirectory: File): Repository = {
-    if (!ErGit.isUnderGit(rootDirectory.pathAsString)) {
-      throw new RepositoryNotFoundException("No git repository specified in" + rootDirectory.pathAsString)
-    }
+    ErGit.verifyUnderGit(rootDirectory.pathAsString)
     val path = rootDirectory.pathAsString
     val branches = ErGit.getLocalBranches(path) map { b =>
       Branch(b)

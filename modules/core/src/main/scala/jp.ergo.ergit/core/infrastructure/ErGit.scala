@@ -1,7 +1,8 @@
-package jp.ergo.ergit.core
+package jp.ergo.ergit.core.infrastructure
 
 import java.io.File
 
+import jp.ergo.ergit.core.infrastructure.exception.RepositoryNotFoundException
 import jp.ergo.ergit.domain.exception.{BranchNotFoundException, GitServiceException, NoSuchBranchException, RemoteRepositoryNotFoundException}
 
 import scala.sys.process._
@@ -54,6 +55,11 @@ object ErGit {
     }
   }
 
+  def verifyUnderGit(path: String): Unit = {
+    if (!isUnderGit(path)) {
+      throw new RepositoryNotFoundException("No git repository specified in" + path)
+    }
+  }
 
   /**
     * ローカルに存在するブランチをすべて取得する
@@ -81,6 +87,7 @@ object ErGit {
 
   /**
     * get the result of "git status".
+ *
     * @param path to the directory to execute git command.
     * @return the result of "git status"
     */
