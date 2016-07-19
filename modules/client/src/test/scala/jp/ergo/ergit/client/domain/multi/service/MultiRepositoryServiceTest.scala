@@ -1,9 +1,10 @@
 package jp.ergo.ergit.client.domain.multi.service
 
 import better.files.File
-import jp.ergo.ergit.domain.{ErGitStatus, Repository, Branch}
-import jp.ergo.ergit.domain.manage.ErGitManager
-import jp.ergo.ergit.domain.multi.exception.BranchNotExistException
+import jp.ergo.ergit.client.domain.ErGitStatus
+import jp.ergo.ergit.client.domain.manage.ErGitManager
+import jp.ergo.ergit.client.domain.multi.exception.BranchNotExistException
+import jp.ergo.ergit.core.domain.{Branch, Repository}
 import jp.ergo.ergit.infrastructure.utils.GitHelper
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
 

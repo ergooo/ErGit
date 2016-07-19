@@ -5,11 +5,10 @@ import java.util.Properties
 
 import better.files._
 import jp.ergo.ergit.client.domain.manage.exception.ErGitManageException
-import jp.ergo.ergit.domain.Repository
+import jp.ergo.ergit.core.domain.Repository
 import jp.ergo.ergit.infrastructure.utils.GitHelper
 import org.scalatest._
-import jp.ergo.ergit.infrastructure.utils.Using.using
-
+import jp.ergo.ergit.client.infrastructure.utils.Using.using
 
 class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
   private val root = File("./src/test/resources")
@@ -64,7 +63,7 @@ class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
     ErGitManager.addRepository(root, Repository(pathToRepository2))
 
     val repoFile = root / ".ergit" / ErGitManager.repoFileName
-    using[Unit, InputStream](repoFile.newInputStream){i =>
+    using[Unit, InputStream](repoFile.newInputStream) { i =>
       val p = new Properties()
       p.load(i)
       p.getProperty("repository1") should be(pathToRepository1.pathAsString)
@@ -87,7 +86,7 @@ class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
 
     ErGitManager.removeRepository(root, "repository1")
     val repoFile = root / ".ergit" / ErGitManager.repoFileName
-    using[Unit, InputStream](repoFile.newInputStream){i =>
+    using[Unit, InputStream](repoFile.newInputStream) { i =>
       val p = new Properties()
       p.load(i)
       p.getProperty("repository1") should be(null)
@@ -102,7 +101,7 @@ class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
     ErGitManager.addRepository(root, Repository(pathToRepository2))
 
     val repoFile = root / ".ergit" / ErGitManager.repoFileName
-    using[Unit, InputStream](repoFile.newInputStream){i =>
+    using[Unit, InputStream](repoFile.newInputStream) { i =>
       val p = new Properties()
       p.load(i)
       p.getProperty("repository1") should be(pathToRepository1.pathAsString)
@@ -112,7 +111,7 @@ class ErGitManager$Test extends FlatSpec with Matchers with BeforeAndAfter {
     // the repository3 to remove has not been added. then do nothing.
     ErGitManager.removeRepository(root, "repository3")
 
-    using[Unit, InputStream](repoFile.newInputStream){i =>
+    using[Unit, InputStream](repoFile.newInputStream) { i =>
       val p = new Properties()
       p.load(i)
       p.getProperty("repository1") should be(pathToRepository1.pathAsString)

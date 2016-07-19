@@ -1,10 +1,10 @@
 package jp.ergo.ergit.app
 
 import better.files.File
-import jp.ergo.ergit.domain.{Repository, Branch}
-import jp.ergo.ergit.domain.manage.ErGitManager
-import jp.ergo.ergit.domain.multi.exception.BranchNotExistException
-import jp.ergo.ergit.domain.multi.service.MultiRepositoryService
+import jp.ergo.ergit.client.domain.manage.ErGitManager
+import jp.ergo.ergit.client.domain.multi.exception.BranchNotExistException
+import jp.ergo.ergit.client.domain.multi.service.MultiRepositoryService
+import jp.ergo.ergit.core.domain.{Branch, Repository}
 
 object ErGitClient {
 

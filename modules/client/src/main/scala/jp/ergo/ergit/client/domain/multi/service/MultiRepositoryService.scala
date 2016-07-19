@@ -1,7 +1,8 @@
 package jp.ergo.ergit.client.domain.multi.service
 
-import jp.ergo.ergit.domain.{Repository, ErGitStatus, Branch}
-import jp.ergo.ergit.domain.multi.exception.BranchNotExistException
+import jp.ergo.ergit.client.domain.ErGitStatus
+import jp.ergo.ergit.client.domain.multi.exception.BranchNotExistException
+import jp.ergo.ergit.core.domain.{Branch, Repository}
 
 
 class MultiRepositoryService(repositories: Seq[Repository]) {

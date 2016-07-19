@@ -1,7 +1,7 @@
-package jp.ergo.ergit.client.repository
+package jp.ergo.ergit.core.domain
 
 import better.files.File
-import jp.ergo.ergit.domain.{RepositoryNotFoundException, Repository, Branch}
+import jp.ergo.ergit.core.infrastructure.exception.RepositoryNotFoundException
 import jp.ergo.ergit.infrastructure.utils.GitHelper
 import org.scalatest._
 

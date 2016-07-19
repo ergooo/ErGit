@@ -4,10 +4,9 @@ import java.io.{InputStream, OutputStream}
 import java.util.Properties
 
 import better.files._
-import jp.ergo.ergit.client.domain.manage.exception.ErGitManageException
-import jp.ergo.ergit.domain.Repository
-import jp.ergo.ergit.domain.manage.exception.{ErGitNotInitializedException, ErGitRepoFileNotFoundException}
-import jp.ergo.ergit.infrastructure.utils.Using.using
+import jp.ergo.ergit.client.domain.manage.exception.{ErGitRepoFileNotFoundException, ErGitManageException, ErGitNotInitializedException}
+import jp.ergo.ergit.client.infrastructure.utils.Using.using
+import jp.ergo.ergit.core.domain.Repository
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
@@ -67,8 +66,8 @@ object ErGitManager {
   /**
     * remove the repository form the repo file. Do nothing if the repository cannot be found.
     *
-    * @param directory  the ergit managed directory.
-    * @param name the repository name to remove.
+    * @param directory the ergit managed directory.
+    * @param name      the repository name to remove.
     * @throws ErGitNotInitializedException if no .ergit found.
     */
   def removeRepository(directory: File, name: String): Unit = {
