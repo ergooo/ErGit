@@ -28,4 +28,11 @@ class StateParserTest extends FlatSpec with Matchers with BeforeAndAfter with Be
   }
 
 
+  "StateParser" should "throw IllegalArgumentException" in {
+    val testData = "something wrong."
+    an[IllegalArgumentException] should be thrownBy StateParser.parse(testData)
+
+  }
+
+
 }

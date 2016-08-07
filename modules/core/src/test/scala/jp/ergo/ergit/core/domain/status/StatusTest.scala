@@ -14,4 +14,11 @@ class StatusTest extends FlatSpec with Matchers with BeforeAndAfter with BeforeA
     actual.states(1) should be(Modified(File("hoge.txt"), Position.Index))
     actual.states(2) should be(Modified(File("mage.txt"), Position.WorkingTree))
   }
+
+  "State" should "create an Empty instance from empty status" in {
+    val testData = ""
+    val actual = Status(testData)
+
+    actual should be(Status.Empty)
+  }
 }
