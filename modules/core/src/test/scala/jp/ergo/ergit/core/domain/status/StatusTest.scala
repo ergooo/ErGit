@@ -1,4 +1,4 @@
-package jp.ergo.ergit.core.domain
+package jp.ergo.ergit.core.domain.status
 
 import better.files.File
 import org.scalatest._

@@ -1,7 +1,6 @@
-package jp.ergo.ergit.core.domain
+package jp.ergo.ergit.core.domain.status
 
 import better.files.File
-import jp.ergo.ergit.core.infrastructure.{EnumCompanion, StringEnumLike}
 
 
 sealed trait State

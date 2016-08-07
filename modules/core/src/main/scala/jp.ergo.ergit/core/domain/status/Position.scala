@@ -1,4 +1,4 @@
-package jp.ergo.ergit.core.domain
+package jp.ergo.ergit.core.domain.status
 
 import jp.ergo.ergit.core.infrastructure.{EnumCompanion, StringEnumLike}
 
