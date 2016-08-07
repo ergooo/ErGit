@@ -1,7 +1,7 @@
-package jp.ergo.ergit.core.domain
+package jp.ergo.ergit.core.domain.status
 
 import better.files.File
-import jp.ergo.ergit.core.domain.Position.{Both, Index, WorkingTree}
+import Position.{Both, Index, WorkingTree}
 
 object StateParser {
 

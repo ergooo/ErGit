@@ -1,8 +1,8 @@
-package jp.ergo.ergit.core.domain
+package jp.ergo.ergit.core.domain.status
 
 import better.files.File
-import jp.ergo.ergit.core.domain.Position.{Both, Index, WorkingTree}
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfter, Matchers, FlatSpec}
+import jp.ergo.ergit.core.domain.status.Position.{Both, Index, WorkingTree}
+import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FlatSpec, Matchers}
 
 class StateParserTest extends FlatSpec with Matchers with BeforeAndAfter with BeforeAndAfterAll {
 
