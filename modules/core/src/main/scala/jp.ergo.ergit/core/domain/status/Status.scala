@@ -3,11 +3,17 @@ package jp.ergo.ergit.core.domain.status
 case class Status(states: Seq[State])
 
 object Status {
-  def apply(porcelain: String) = {
-    val states = porcelain.split("\n") map { line =>
-      StateParser.parse(line)
-    }
+  var Empty = new Status(Seq())
 
-    new Status(states)
+  def apply(porcelain: String) = {
+    porcelain match {
+      case "" => Empty
+      case _ => {
+        val states = porcelain.split("\n") map { line =>
+          StateParser.parse(line)
+        }
+        new Status(states)
+      }
+    }
   }
 }

@@ -1,28 +1,25 @@
 package jp.ergo.ergit.core.domain.status
 
 import better.files.File
-import Position.{Both, Index, WorkingTree}
+import jp.ergo.ergit.core.domain.status.Position.{Both, Index, WorkingTree}
 
 object StateParser {
 
   def parse(line: String): State = {
-    validate(line)
-    val flags = line.take(2)
-    val filePart = line.drop(3)
-
-    flags.trim.headOption match {
-      case Some('M') => Modified(File(filePart.trim), parsePosition(flags.toList))
-      case Some('A') => Added(File(filePart.trim), parsePosition(flags.toList))
-      case Some('D') => Deleted(File(filePart.trim), parsePosition(flags.toList))
-      case Some('R') => Renamed(retrieveFrom(filePart), retrieveTo(filePart), parsePosition(flags.toList))
-      case Some('C') => Copied(retrieveFrom(filePart), retrieveTo(filePart), parsePosition(flags.toList))
-      case Some('?') => Untracked(File(filePart.trim), parsePosition(flags.toList))
-      case _ => throw new Exception()
+    val pattern = """(.{2}) (.*)""".r
+    line match {
+      case pattern(flags, filePart) =>
+        flags.trim.headOption match {
+          case Some('M') => Modified(File(filePart.trim), parsePosition(flags.toList))
+          case Some('A') => Added(File(filePart.trim), parsePosition(flags.toList))
+          case Some('D') => Deleted(File(filePart.trim), parsePosition(flags.toList))
+          case Some('R') => Renamed(retrieveFrom(filePart), retrieveTo(filePart), parsePosition(flags.toList))
+          case Some('C') => Copied(retrieveFrom(filePart), retrieveTo(filePart), parsePosition(flags.toList))
+          case Some('?') => Untracked(File(filePart.trim), parsePosition(flags.toList))
+          case _ => throw new IllegalArgumentException(line + "is invalid.")
+        }
+      case _ => throw new IllegalArgumentException(line + "is invalid.")
     }
-  }
-
-  private def validate(line:String) = {
-    line.matches("""(xx)""")
   }
 
   private def parsePosition(flags: List[Char]): Position = {
