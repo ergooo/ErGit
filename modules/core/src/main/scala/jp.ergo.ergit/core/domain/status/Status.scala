@@ -1,18 +1,19 @@
 package jp.ergo.ergit.core.domain.status
 
-case class Status(states: Seq[State])
+case class Status(states: Seq[State], displayableString: String) {
+  def hasNoChange = states.isEmpty
+}
 
 object Status {
-  var Empty = new Status(Seq())
 
-  def apply(porcelain: String) = {
+  def apply(porcelain: String, displayableString: String) = {
     porcelain match {
-      case "" => Empty
+      case "" => new Status(Seq(), displayableString)
       case _ => {
         val states = porcelain.split("\n") map { line =>
           StateParser.parse(line)
         }
-        new Status(states)
+        new Status(states, displayableString)
       }
     }
   }

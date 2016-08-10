@@ -83,17 +83,19 @@ class ErGit$Test extends FlatSpec with Matchers with BeforeAndAfter with BeforeA
     status should be("On branch master\nnothing to commit, working directory clean\n")
   }
 
-  "hasDifferenceBetweenIndexAndWorkingTree" should "return true" in {
+  "hasChangedFileInIndexOrWorkingThree" should "return true" in {
     val file = new File(path, "newfile")
     val res = file.createNewFile()
-    println(res)
 
-    val hasDifference = ErGit.hasDifferenceBetweenIndexAndWorkingTree(path.getAbsolutePath)
+    val hasDifference = ErGit.hasFileChangedInIndexOrWorkingThree(path.getAbsolutePath)
     hasDifference should be(true)
 
     file.delete()
 
 
   }
+
+
+
 
 }
