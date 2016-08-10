@@ -2,6 +2,7 @@ package jp.ergo.ergit.core.infrastructure
 
 import java.io.File
 
+import jp.ergo.ergit.core.domain.status.Status
 import jp.ergo.ergit.core.infrastructure.exception.RepositoryNotFoundException
 import jp.ergo.ergit.domain.exception.{BranchNotFoundException, GitServiceException, NoSuchBranchException, RemoteRepositoryNotFoundException}
 
@@ -104,6 +105,12 @@ object ErGit {
   def hasDifferenceBetweenIndexAndHead(path: String): Boolean = {
     (Process(Seq("git", "diff", "--cached"), new File(path)) !!) != ""
 
+  }
+
+  def hasFileChangedInIndexOrWorkingThree(path: String): Boolean = {
+    val porcelain = Process(Seq("git", "status", "--porcelain"), new File(path)) !!
+
+    !Status(porcelain, "").hasNoChange
   }
 
   private def has(path: String, branch: String): Boolean = {

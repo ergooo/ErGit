@@ -7,7 +7,7 @@ class StatusTest extends FlatSpec with Matchers with BeforeAndAfter with BeforeA
 
   "State" should "create a State instance from status lines" in {
     val testData = "MM ReadMe.md\nM  hoge.txt\n M mage.txt"
-    val actual = Status(testData)
+    val actual = Status(testData, "")
 
     actual.states.size should be(3)
     actual.states(0) should be(Modified(File("ReadMe.md"), Position.Both))
@@ -17,8 +17,8 @@ class StatusTest extends FlatSpec with Matchers with BeforeAndAfter with BeforeA
 
   "State" should "create an Empty instance from empty status" in {
     val testData = ""
-    val actual = Status(testData)
+    val actual = Status(testData, "")
 
-    actual should be(Status.Empty)
+    actual.hasNoChange should be(true)
   }
 }
