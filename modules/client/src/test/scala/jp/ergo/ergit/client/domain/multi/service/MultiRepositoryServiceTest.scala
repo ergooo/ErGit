@@ -1,11 +1,10 @@
 package jp.ergo.ergit.client.domain.multi.service
 
 import better.files.File
-import jp.ergo.ergit.client.domain.ErGitStatus
 import jp.ergo.ergit.client.domain.manage.ErGitManager
 import jp.ergo.ergit.client.domain.multi.exception.BranchNotExistException
 import jp.ergo.ergit.core.domain.{Branch, Repository}
-import jp.ergo.ergit.infrastructure.utils.GitHelper
+import jp.ergo.ergit.core.utils.GitHelper
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
 
 class MultiRepositoryServiceTest extends FlatSpec with Matchers with BeforeAndAfter {
@@ -41,21 +40,6 @@ class MultiRepositoryServiceTest extends FlatSpec with Matchers with BeforeAndAf
   }
 
   behavior of "MultiRepositoryServiceTest"
-
-  "getStatuses" should "return the statuses" in {
-    ErGitManager.init(root)
-    ErGitManager.addRepository(root, Repository(pathToRepository1))
-    ErGitManager.addRepository(root, Repository(pathToRepository2))
-    ErGitManager.addRepository(root, Repository(pathToRepository3))
-    val repositories = ErGitManager.getRepositories(root)
-    val statuses = MultiRepositoryService.getStatuses(repositories)
-    statuses.foreach {
-      case ErGitStatus("repository1", ｓ) => ｓ should be("On branch master\nnothing to commit, working directory clean\n")
-      case ErGitStatus("repository2", ｓ) => ｓ should be("On branch master\nnothing to commit, working directory clean\n")
-      case ErGitStatus("repository3", ｓ) => ｓ should be("On branch master\nnothing to commit, working directory clean\n")
-      case _ => fail()
-    }
-  }
 
   "checkout" should "checkout the branch" in {
     ErGitManager.init(root)

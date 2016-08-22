@@ -1,8 +1,8 @@
-package jp.ergo.ergit.app
+package jp.ergo.ergit.client.app
 
 import better.files.File
 import jp.ergo.ergit.client.domain.manage.ErGitManager
-import jp.ergo.ergit.client.domain.multi.exception.BranchNotExistException
+import jp.ergo.ergit.client.domain.multi.exception.{BranchNotExistException, RepositoryWorkingInProgressException}
 import jp.ergo.ergit.client.domain.multi.service.MultiRepositoryService
 import jp.ergo.ergit.core.domain.{Branch, Repository}
 
@@ -60,9 +60,8 @@ object ErGitClient {
             }
           case Command.Status =>
             val repositories = ErGitManager.getRepositories(currentDirectory)
-            val status = MultiRepositoryService.getStatuses(repositories)
-            status foreach { x =>
-              println(x.toString())
+            repositories foreach { x =>
+              println(x.getStatus.displayableString)
             }
 
           case Command.Checkout =>
@@ -72,6 +71,10 @@ object ErGitClient {
             } catch {
               case e: BranchNotExistException =>
                 val message = "the following repositories doesn't have the specified branch: %s\n%s".format(config.branchName, e.repositories.map(f => f.name).mkString("\n"))
+                println(message)
+
+              case e: RepositoryWorkingInProgressException =>
+                val message = "the following repositories is working in progress:%s\n%s".format(config.branchName, e.repositories.map(f => f.name).mkString("\n"))
                 println(message)
             }
 
