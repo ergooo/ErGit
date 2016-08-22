@@ -61,7 +61,7 @@ object ErGitClient {
           case Command.Status =>
             val repositories = ErGitManager.getRepositories(currentDirectory)
             repositories foreach { x =>
-              println(x.getStatus.displayableString)
+              println("%s\n%s".format(x.name, x.getStatus.displayableString))
             }
 
           case Command.Checkout =>
@@ -74,7 +74,7 @@ object ErGitClient {
                 println(message)
 
               case e: RepositoryWorkingInProgressException =>
-                val message = "the following repositories is working in progress:%s\n%s".format(config.branchName, e.repositories.map(f => f.name).mkString("\n"))
+                val message = "the following repositories is working in progress:\n%s".format(e.repositories.map(f => "%s\n%s".format(f.name, f.getStatus.porcelainString)).mkString("\n"))
                 println(message)
             }
 
