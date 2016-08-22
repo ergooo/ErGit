@@ -1,6 +1,7 @@
 package jp.ergo.ergit.core.domain
 
 import better.files.File
+import jp.ergo.ergit.core.domain.status.Status
 import jp.ergo.ergit.core.infrastructure.ErGit
 import jp.ergo.ergit.domain.exception.NoSuchBranchException
 
@@ -36,8 +37,8 @@ case class Repository(path: String, name: String, branches: Seq[Branch], remoteB
     } head
   }
 
-  def getStatus: String = {
-    ErGit.getStatus(path)
+  def getStatus: Status = {
+    Status(ErGit.getPorcelainStatus(path), ErGit.getStatus(path))
   }
 
 }

@@ -1,7 +1,6 @@
 package jp.ergo.ergit.client.domain.multi.service
 
-import jp.ergo.ergit.client.domain.ErGitStatus
-import jp.ergo.ergit.client.domain.multi.exception.BranchNotExistException
+import jp.ergo.ergit.client.domain.multi.exception.{BranchNotExistException, RepositoryWorkingInProgressException}
 import jp.ergo.ergit.core.domain.{Branch, Repository}
 
 
@@ -22,27 +21,35 @@ class MultiRepositoryService(repositories: Seq[Repository]) {
 }
 
 object MultiRepositoryService {
-  def getStatuses(repositories: Seq[Repository]): Seq[ErGitStatus] = {
-    repositories map { r =>
-      ErGitStatus(r.name, r.getStatus)
-    }
-  }
 
   /**
     * checkout the branch of all the repositories. if there are some repositories that have no such branch, throw BranchNotExistException.
     *
     * @param repositories the repositories.
-    * @param branch the branch to checkout.
-    * @throws BranchNotExistException thrown if there are some repositories that have no such branch.
+    * @param branch       the branch to checkout.
+    * @throws BranchNotExistException              thrown if there are some repositories that have no such branch.
+    * @throws RepositoryWorkingInProgressException thrown if the repository working in progress exists.
     *
     */
   def checkout(repositories: Seq[Repository], branch: Branch): Unit = {
+    checkIfRepositoryNoBranchExists(repositories, branch)
+    checkIfRepositoryWorkingInProgressExists(repositories, branch)
 
+    repositories.foreach(p => p.checkout(branch))
+
+  }
+
+  def checkIfRepositoryNoBranchExists(repositories: Seq[Repository], branch: Branch) = {
     val repositoryNoBranch = repositories filter (p => !p.existsInLocal(branch))
     if (repositoryNoBranch.nonEmpty) {
       throw new BranchNotExistException(repositoryNoBranch, branch)
-    } else {
-      repositories.foreach(p => p.checkout(branch))
+    }
+  }
+
+  def checkIfRepositoryWorkingInProgressExists(repositories: Seq[Repository], branch: Branch) = {
+    val repositoryWorkingInProgress = repositories filter (p => !p.getStatus.hasNoChange)
+    if (repositoryWorkingInProgress.nonEmpty) {
+      throw new RepositoryWorkingInProgressException(repositoryWorkingInProgress, branch)
     }
   }
 }

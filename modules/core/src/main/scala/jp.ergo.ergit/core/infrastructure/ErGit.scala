@@ -107,10 +107,8 @@ object ErGit {
 
   }
 
-  def hasFileChangedInIndexOrWorkingThree(path: String): Boolean = {
-    val porcelain = Process(Seq("git", "status", "--porcelain"), new File(path)) !!
-
-    !Status(porcelain, "").hasNoChange
+  def getPorcelainStatus(path: String): String = {
+    Process(Seq("git", "status", "--porcelain"), new File(path)) !!
   }
 
   private def has(path: String, branch: String): Boolean = {

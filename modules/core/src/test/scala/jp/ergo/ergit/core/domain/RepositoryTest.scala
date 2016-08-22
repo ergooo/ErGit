@@ -2,7 +2,7 @@ package jp.ergo.ergit.core.domain
 
 import better.files.File
 import jp.ergo.ergit.core.infrastructure.exception.RepositoryNotFoundException
-import jp.ergo.ergit.infrastructure.utils.GitHelper
+import jp.ergo.ergit.core.utils.GitHelper
 import org.scalatest._
 
 import scala.sys.process.Process
@@ -65,7 +65,7 @@ class RepositoryTest extends FlatSpec with Matchers with BeforeAndAfter with Bef
   "getStatus" should "return the status as String" in {
     val sut = Repository(path)
     val status = sut.getStatus
-    status should be("On branch master\nnothing to commit, working directory clean\n")
+    status.displayableString should be("On branch master\nnothing to commit, working directory clean\n")
   }
 
 }

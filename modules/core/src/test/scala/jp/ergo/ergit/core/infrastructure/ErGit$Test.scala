@@ -3,7 +3,7 @@ package jp.ergo.ergit.core.infrastructure
 import java.io.File
 
 import jp.ergo.ergit.domain.exception.{NoSuchBranchException, RemoteRepositoryNotFoundException}
-import jp.ergo.ergit.infrastructure.utils.GitHelper
+import jp.ergo.ergit.core.utils.GitHelper
 import org.scalatest._
 
 import scala.sys.process.Process
@@ -82,20 +82,6 @@ class ErGit$Test extends FlatSpec with Matchers with BeforeAndAfter with BeforeA
     val status = ErGit.getStatus(path.getAbsolutePath)
     status should be("On branch master\nnothing to commit, working directory clean\n")
   }
-
-  "hasChangedFileInIndexOrWorkingThree" should "return true" in {
-    val file = new File(path, "newfile")
-    val res = file.createNewFile()
-
-    val hasDifference = ErGit.hasFileChangedInIndexOrWorkingThree(path.getAbsolutePath)
-    hasDifference should be(true)
-
-    file.delete()
-
-
-  }
-
-
 
 
 }
