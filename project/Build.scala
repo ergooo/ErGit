@@ -1,5 +1,6 @@
 import java.io.File
 
+import sbt.Keys._
 import sbt._
 import sbtassembly.AssemblyPlugin.autoImport._
 
@@ -13,9 +14,9 @@ object Build extends Build {
   }
 
   val packageErGit = taskKey[Unit]("package ErGit.")
-  
+
   // Project settings
-  lazy val root = (project in file(".")).
+  lazy val root = (project in file("modules/client")).
     settings(
       packageErGit := {
         val jarFile = assembly.value
@@ -29,6 +30,10 @@ object Build extends Build {
         IO.copyFile(jarFile, new File(pathToPackagingDirectory, jarFile.name))
       }
     )
+    .dependsOn(core % "compile->compile;test->test")
 
+  lazy val core = project in file("modules/core")
+
+  mainClass in assembly := Some("jp.ergo.ergit.client.app.ErGitClient")
 
 }

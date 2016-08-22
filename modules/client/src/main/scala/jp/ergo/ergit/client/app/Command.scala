@@ -1,4 +1,4 @@
-package jp.ergo.ergit.app
+package jp.ergo.ergit.client.app
 
 sealed abstract class Command
 

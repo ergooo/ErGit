@@ -6,7 +6,7 @@ import java.util.Properties
 import better.files._
 import jp.ergo.ergit.client.domain.manage.exception.ErGitManageException
 import jp.ergo.ergit.core.domain.Repository
-import jp.ergo.ergit.infrastructure.utils.GitHelper
+import jp.ergo.ergit.core.utils.GitHelper
 import org.scalatest._
 import jp.ergo.ergit.client.infrastructure.utils.Using.using
 

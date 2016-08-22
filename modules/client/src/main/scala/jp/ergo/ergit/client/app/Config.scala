@@ -1,4 +1,4 @@
-package jp.ergo.ergit.app
+package jp.ergo.ergit.client.app
 
 case class Config(
                    command: Command = Command.None,

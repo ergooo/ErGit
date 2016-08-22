@@ -1,4 +1,4 @@
-name := "ergit-client"
+name := "ErGitClient"
 
 version := "1.0"
 

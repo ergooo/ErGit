@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: jp.ergo.ergit.app.ErGitClient
+Main-Class: jp.ergo.ergit.client.app.ErGitClient
 
