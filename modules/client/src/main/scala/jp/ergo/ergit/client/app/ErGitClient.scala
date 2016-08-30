@@ -40,6 +40,8 @@ object ErGitClient {
           arg[String]("<branch>").required().action((x, c) => c.copy(branchName = x)),
           opt[Unit]("b").abbr("b").action((_, c) => c.copy(createBranch = true)).text("b is an option.")
         )
+
+      cmd("branch").action((_, c) => c.copy(command = Command.Branch)).text("branch is a command.")
     }
 
     // parser.parse returns Option[C]
@@ -92,6 +94,12 @@ object ErGitClient {
                   val message = "the following repositories is working in progress:\n%s".format(e.repositories.map(f => "%s\n%s".format(f.name, f.getStatus.porcelainString)).mkString("\n"))
                   println(message)
               }
+            }
+
+          case Command.Branch =>
+            val repositories = ErGitManager.getRepositories(currentDirectory)
+            repositories foreach { x =>
+              println("%s:\n%s\n".format(x.name, x.branches.mkString("\n")))
             }
 
           case _ =>

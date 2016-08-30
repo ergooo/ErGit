@@ -14,4 +14,6 @@ object Command {
 
   case object Checkout extends Command
 
+  case object Branch extends Command
+
 }
