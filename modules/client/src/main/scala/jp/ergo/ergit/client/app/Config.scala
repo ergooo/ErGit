@@ -7,7 +7,8 @@ case class Config(
                    repositoryPath: String = "",
                    repositoryName: String = "",
                    branchName: String = "",
-                   createBranch: Boolean = false
+                   createBranch: Boolean = false,
+                   allBranches:Boolean = false
                  )
 
 

@@ -41,7 +41,10 @@ object ErGitClient {
           opt[Unit]("b").abbr("b").action((_, c) => c.copy(createBranch = true)).text("b is an option.")
         )
 
-      cmd("branch").action((_, c) => c.copy(command = Command.Branch)).text("branch is a command.")
+      cmd("branch").action((_, c) => c.copy(command = Command.Branch)).text("branch is a command.").
+        children(
+          opt[Unit]("a").abbr("a").action((_, c) => c.copy(allBranches = true)).text("a is an option.")
+        )
     }
 
     // parser.parse returns Option[C]
@@ -97,9 +100,18 @@ object ErGitClient {
             }
 
           case Command.Branch =>
-            val repositories = ErGitManager.getRepositories(currentDirectory)
-            repositories foreach { x =>
-              println("%s:\n%s\n".format(x.name, x.branches.mkString("\n")))
+            if (config.allBranches) {
+              val repositories = ErGitManager.getRepositories(currentDirectory)
+              repositories foreach { x =>
+                val localBranches = x.branches.map(b => b.name).mkString("\n")
+                val remoteBranches = x.remoteBranches.map(r => "remotes/%s".format(r.name)).mkString("\n")
+                println("%s:\n%s%s\n".format(x.name, localBranches, remoteBranches))
+              }
+            } else {
+              val repositories = ErGitManager.getRepositories(currentDirectory)
+              repositories foreach { x =>
+                println("%s:\n%s\n".format(x.name, x.branches.map(b => b.name).mkString("\n")))
+              }
             }
 
           case _ =>
