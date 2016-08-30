@@ -1,6 +1,6 @@
 package jp.ergo.ergit.client.domain.multi.service
 
-import jp.ergo.ergit.client.domain.multi.exception.{BranchNotExistException, RepositoryWorkingInProgressException}
+import jp.ergo.ergit.client.domain.multi.exception.{BranchAlreadyExistException, BranchNotExistException, RepositoryWorkingInProgressException}
 import jp.ergo.ergit.core.domain.{Branch, Repository}
 
 
@@ -39,17 +39,32 @@ object MultiRepositoryService {
 
   }
 
-  def checkIfRepositoryNoBranchExists(repositories: Seq[Repository], branch: Branch) = {
+  def checkoutb(repositories: Seq[Repository], branch: Branch): Unit = {
+    checkIfRepositoryWorkingInProgressExists(repositories, branch)
+    checkIfBranchAlreadyExists(repositories, branch)
+
+    repositories.foreach(p => p.checkoutb(branch))
+  }
+
+
+  private def checkIfRepositoryNoBranchExists(repositories: Seq[Repository], branch: Branch) = {
     val repositoryNoBranch = repositories filter (p => !p.existsInLocal(branch))
     if (repositoryNoBranch.nonEmpty) {
       throw new BranchNotExistException(repositoryNoBranch, branch)
     }
   }
 
-  def checkIfRepositoryWorkingInProgressExists(repositories: Seq[Repository], branch: Branch) = {
+  private def checkIfRepositoryWorkingInProgressExists(repositories: Seq[Repository], branch: Branch) = {
     val repositoryWorkingInProgress = repositories filter (p => !p.getStatus.hasNoChange)
     if (repositoryWorkingInProgress.nonEmpty) {
       throw new RepositoryWorkingInProgressException(repositoryWorkingInProgress, branch)
+    }
+  }
+
+  private def checkIfBranchAlreadyExists(repositories: Seq[Repository], branch: Branch) = {
+    val repositoryBranchAlreadyExists = repositories filter (p => p.existsInLocal(branch))
+    if (repositoryBranchAlreadyExists.nonEmpty) {
+      throw new BranchAlreadyExistException(repositoryBranchAlreadyExists, branch)
     }
   }
 }

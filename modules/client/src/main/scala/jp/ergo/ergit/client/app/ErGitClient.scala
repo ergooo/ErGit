@@ -2,7 +2,7 @@ package jp.ergo.ergit.client.app
 
 import better.files.File
 import jp.ergo.ergit.client.domain.manage.ErGitManager
-import jp.ergo.ergit.client.domain.multi.exception.{BranchNotExistException, RepositoryWorkingInProgressException}
+import jp.ergo.ergit.client.domain.multi.exception.{BranchAlreadyExistException, BranchNotExistException, RepositoryWorkingInProgressException}
 import jp.ergo.ergit.client.domain.multi.service.MultiRepositoryService
 import jp.ergo.ergit.core.domain.{Branch, Repository}
 
@@ -37,7 +37,8 @@ object ErGitClient {
 
       cmd("checkout").action((_, c) => c.copy(command = Command.Checkout)).text("checkout is a command.").
         children(
-          arg[String]("<branch>").required().action((x, c) => c.copy(branchName = x))
+          arg[String]("<branch>").required().action((x, c) => c.copy(branchName = x)),
+          opt[Unit]("b").abbr("b").action((_, c) => c.copy(createBranch = true)).text("b is an option.")
         )
     }
 
@@ -65,17 +66,32 @@ object ErGitClient {
             }
 
           case Command.Checkout =>
-            val repositories = ErGitManager.getRepositories(currentDirectory)
-            try {
-              MultiRepositoryService.checkout(repositories, Branch(config.branchName))
-            } catch {
-              case e: BranchNotExistException =>
-                val message = "the following repositories doesn't have the specified branch: %s\n%s".format(config.branchName, e.repositories.map(f => f.name).mkString("\n"))
-                println(message)
+            if (config.createBranch) {
+              val repositories = ErGitManager.getRepositories(currentDirectory)
+              try {
+                MultiRepositoryService.checkoutb(repositories, Branch(config.branchName))
+              } catch {
+                case e: RepositoryWorkingInProgressException =>
+                  val message = "the following repositories is working in progress:\n%s".format(e.repositories.map(f => "%s\n%s".format(f.name, f.getStatus.porcelainString)).mkString("\n"))
+                  println(message)
 
-              case e: RepositoryWorkingInProgressException =>
-                val message = "the following repositories is working in progress:\n%s".format(e.repositories.map(f => "%s\n%s".format(f.name, f.getStatus.porcelainString)).mkString("\n"))
-                println(message)
+                case e: BranchAlreadyExistException =>
+                  val message = "the following repository already has the specified branch: \n%s".format(e.repositories.map(f => f.name).mkString("\n"))
+                  println(message)
+              }
+            } else {
+              val repositories = ErGitManager.getRepositories(currentDirectory)
+              try {
+                MultiRepositoryService.checkout(repositories, Branch(config.branchName))
+              } catch {
+                case e: BranchNotExistException =>
+                  val message = "the following repositories doesn't have the specified branch: %s\n%s".format(config.branchName, e.repositories.map(f => f.name).mkString("\n"))
+                  println(message)
+
+                case e: RepositoryWorkingInProgressException =>
+                  val message = "the following repositories is working in progress:\n%s".format(e.repositories.map(f => "%s\n%s".format(f.name, f.getStatus.porcelainString)).mkString("\n"))
+                  println(message)
+              }
             }
 
           case _ =>
