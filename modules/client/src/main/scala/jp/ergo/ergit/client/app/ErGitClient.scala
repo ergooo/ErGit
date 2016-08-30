@@ -103,14 +103,15 @@ object ErGitClient {
             if (config.allBranches) {
               val repositories = ErGitManager.getRepositories(currentDirectory)
               repositories foreach { x =>
-                val localBranches = x.branches.map(b => b.name).mkString("\n")
+                val localBranches = x.branches.map(b => "%s %s".format(if (x.getCurrentBranch == b) "*" else " ", b.name)).mkString("\n")
                 val remoteBranches = x.remoteBranches.map(r => "remotes/%s".format(r.name)).mkString("\n")
                 println("%s:\n%s%s\n".format(x.name, localBranches, remoteBranches))
               }
             } else {
               val repositories = ErGitManager.getRepositories(currentDirectory)
               repositories foreach { x =>
-                println("%s:\n%s\n".format(x.name, x.branches.map(b => b.name).mkString("\n")))
+                val localBranches = x.branches.map(b => "%s %s".format(if (x.getCurrentBranch == b) "*" else " ", b.name)).mkString("\n")
+                println("%s:\n%s\n".format(x.name, localBranches))
               }
             }
 
