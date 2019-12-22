@@ -15,6 +15,8 @@ object ErGit {
     def brancha(implicit path: String): ProcessBuilder = proc(Seq("git", "branch", "-a"), path)
 
     def branch(implicit path: String): ProcessBuilder = proc(Seq("git", "branch"), path)
+
+    def branch(path: String, branch: String): ProcessBuilder = proc(Seq("git", "branch", branch), path)
   }
 
   @throws(classOf[NoSuchBranchException])
@@ -109,6 +111,10 @@ object ErGit {
 
   def getPorcelainStatus(path: String): String = {
     Process(Seq("git", "status", "--porcelain"), new File(path)) !!
+  }
+
+  def createBranch(path:String, branch: String): Unit = {
+    Proc.branch(path, branch) !!
   }
 
   private def has(path: String, branch: String): Boolean = {
